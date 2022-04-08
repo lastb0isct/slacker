@@ -16,7 +16,7 @@ class MessageHandler(Message):
             print('Config doesn\'t exists!')
             exit(1)
 
-        self.config = yaml.load(open(config))
+        self.config = yaml.safe_load(open(config))
 
     def handle_message(self, message):
         """ This method will be called by aiosmtpd server when new mail will
@@ -26,9 +26,6 @@ class MessageHandler(Message):
 
         print('matched', options)
         self.send_to_slack(self.extract_text(message), **options)
-
-        if options['debug']:
-            self.send_to_slack('DEBUG: ' + str(message), **options)
 
     def process_rules(self, message):
         """ Check every rule from config and returns options from matched
@@ -44,18 +41,6 @@ class MessageHandler(Message):
 
         print(fields)
 
-        for rule in self.config['rules']:
-            # TODO: better handling of None values than just str(value)
-            tests = (
-                re.match(rule[field], str(value))
-                for field, value in fields.items() if field in rule
-            )
-
-            if all(tests):
-                options = default.copy()
-                options.update(rule['options'])
-                return options
-
         return default
 
     def extract_text(self, message):
@@ -64,17 +49,8 @@ class MessageHandler(Message):
         subject = message['Subject']
         return fmt % dict(body=body, subject=subject)
 
-    def send_to_slack(self, text, emailtext, url):
+    def send_to_slack(self, text, url):
         print('sending to slack', text)
 
         emailtext = {"email": text}
         return requests.post(url, json.dumps(emailtext))
-        
-        
-        #slack.api_token = options['slack_token']
-        #slack.chat.post_message(
-        #    options['channel'],
-        #    text,
-        #    username=options['username'],
-        #    icon_url=options['icon_url']
-        #)
