@@ -64,13 +64,17 @@ class MessageHandler(Message):
         subject = message['Subject']
         return fmt % dict(body=body, subject=subject)
 
-    def send_to_slack(self, text, **options):
-        print('sending to slack', text, options)
+    def send_to_slack(self, text, emailtext, url):
+        print('sending to slack', text)
 
-        slack.api_token = options['slack_token']
-        slack.chat.post_message(
-            options['channel'],
-            text,
-            username=options['username'],
-            icon_url=options['icon_url']
-        )
+        emailtext = {"email": text}
+        return requests.post(url, json.dumps(emailtext))
+        
+        
+        #slack.api_token = options['slack_token']
+        #slack.chat.post_message(
+        #    options['channel'],
+        #    text,
+        #    username=options['username'],
+        #    icon_url=options['icon_url']
+        #)
