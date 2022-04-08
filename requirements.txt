@@ -1,4 +1,4 @@
--e git://github.com/aio-libs/aiosmtpd#egg=aiosmtpd
+-e https://github.com/aio-libs/aiosmtpd#egg=aiosmtpd
 atpublic==0.3
 pyslack==0.3.0
 PyYAML==5.4
