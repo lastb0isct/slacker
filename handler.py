@@ -1,8 +1,8 @@
 import os
 import re
 import yaml
-import slack
-import slack.chat
+import requests
+import json
 from aiosmtpd.handlers import Message
 
 
