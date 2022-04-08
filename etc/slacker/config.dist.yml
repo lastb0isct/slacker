@@ -12,6 +12,6 @@
 
 default:
     icon_url: ''
-    url: "https://hooks.slack.com/services/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"
+    url: "https://hooks.slack.com/services/"
     debug: false
     format: "subject: %(subject)s; body: %(body)s"  ## default slack message format
