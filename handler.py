@@ -19,6 +19,7 @@ class MessageHandler(Message):
         self.config = yaml.safe_load(open(config))
 
     def handle_message(self, message):
+        print('This is calling handle_message')
         """ This method will be called by aiosmtpd server when new mail will
             arrived.
         """
@@ -49,7 +50,7 @@ class MessageHandler(Message):
         subject = message['Subject']
         return fmt % dict(body=body, subject=subject)
 
-    def send_to_slack(self, text, url):
+    def send_to_slack(self, text, **options):
         print('sending to slack', text)
 
         emailtext = {"email": text}
