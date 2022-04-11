@@ -53,5 +53,5 @@ class MessageHandler(Message):
     def send_to_slack(self, text, **options):
         print('sending to slack', text)
 
-        emailtext = {"email": text}
+        emailtext = {"text": text}
         return requests.post(url, json.dumps(emailtext))
