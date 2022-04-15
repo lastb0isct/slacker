@@ -4,6 +4,7 @@ import re
 import yaml
 import requests
 import json
+from configobj import ConfigObj
 from aiosmtpd.handlers import Message
 
 
@@ -32,7 +33,8 @@ class MessageHandler(Message):
         subject = (message['Subject'])
         sender = (message['From'])
 
-        url = 'https://hooks.slack.com/services/'
+        url = ConfigObj('/etc/slacker/config.yml')
+        print("URL from ConfigObj is: " + url['url'])
         slack_data = {
             "username": "SMTPtoSlack",
             "icon_emoji": ":satellite:",
@@ -53,6 +55,6 @@ class MessageHandler(Message):
 
         byte_length = str(sys.getsizeof(slack_data))
         headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
-        response = requests.post(url, data=json.dumps(slack_data), headers=headers)
+        response = requests.post(url['url'], data=json.dumps(slack_data), headers=headers)
         if response.status_code !=200:
             raise Exception(response.status_code, response.text)
