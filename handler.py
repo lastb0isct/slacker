@@ -32,7 +32,7 @@ class MessageHandler(Message):
         subject = (message['Subject'])
         sender = (message['From'])
 
-        url = 'https://hooks.slack.com/services/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'
+        url = 'https://hooks.slack.com/services/'
         slack_data = {
             "username": "SMTPtoSlack",
             "icon_emoji": ":satellite:",
