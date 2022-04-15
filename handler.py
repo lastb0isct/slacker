@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import yaml
 import requests
@@ -7,6 +8,7 @@ from aiosmtpd.handlers import Message
 
 
 class MessageHandler(Message):
+    print("MessageHandler was called")
     def __init__(self, *args, **kargs):
         Message.__init__(self, *args, **kargs)
 
@@ -19,39 +21,38 @@ class MessageHandler(Message):
         self.config = yaml.safe_load(open(config))
 
     def handle_message(self, message):
-        print('This is calling handle_message')
         """ This method will be called by aiosmtpd server when new mail will
             arrived.
         """
-        options = self.process_rules(message)
 
-        print('matched', options)
-        self.send_to_slack(self.extract_text(message), **options)
+        self.send_to_slack(message)
 
-    def process_rules(self, message):
-        """ Check every rule from config and returns options from matched
-        """
-        default = self.config['default']
+    def send_to_slack(self, message):
 
-        fields = {
-            'from': message['From'],
-            'to': message['To'],
-            'subject': message['Subject'],
-            'body': message.get_payload()
+        subject = (message['Subject'])
+        sender = (message['From'])
+
+        url = 'https://hooks.slack.com/services/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'
+        slack_data = {
+            "username": "SMTPtoSlack",
+            "icon_emoji": ":satellite:",
+            #"channel" : "#somerandomcahnnel",
+            "attachments": [
+                {
+                    "color": "#9733EE",
+                    "fields": [
+                        {
+                            "title": sender,
+                            "value": subject,
+                            "short": "false",
+                        }
+                    ]
+                }
+             ]
         }
 
-        print(fields)
-
-        return default
-
-    def extract_text(self, message):
-        fmt = self.config['default'].get('format', '%(body)s')
-        body = message.get_payload()
-        subject = message['Subject']
-        return fmt % dict(body=body, subject=subject)
-
-    def send_to_slack(self, text, **options):
-        print('sending to slack', text)
-
-        emailtext = {"text": text}
-        return requests.post(url, json.dumps(emailtext))
+        byte_length = str(sys.getsizeof(slack_data))
+        headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
+        response = requests.post(url, data=json.dumps(slack_data), headers=headers)
+        if response.status_code !=200:
+            raise Exception(response.status_code, response.text)
